@@ -535,7 +535,24 @@
         </div>
     </div>
 
-    <script>
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8-i1t42kOo4q2GIpFFFqpjk_8bEqIVN4",
+            authDomain: "superbowlbets-27a5b.firebaseapp.com",
+            projectId: "superbowlbets-27a5b",
+            storageBucket: "superbowlbets-27a5b.firebasestorage.app",
+            messagingSenderId: "120274094286",
+            appId: "1:120274094286:web:06241765a625c92911a89f",
+            measurementId: "G-GB00B0X411"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         // All bets hardcoded
         const bets = [
             { id: 1, description: "Seahawks to win", odds: "-240" },
@@ -650,6 +667,26 @@
         // Initialize
         loadAllData();
 
+        // Real-time listeners
+        onSnapshot(collection(db, 'players'), (snapshot) => {
+            players = [];
+            snapshot.forEach((doc) => {
+                players.push({ id: doc.id, ...doc.data() });
+            });
+            updateLeaderboard();
+        });
+
+        onSnapshot(collection(db, 'results'), (snapshot) => {
+            results = {};
+            snapshot.forEach((doc) => {
+                results[doc.id] = doc.data().result;
+            });
+            updateLeaderboard();
+            if (isAdmin) {
+                updateAdminPanel();
+            }
+        });
+
         async function loadAllData() {
             try {
                 await Promise.all([
@@ -669,10 +706,11 @@
 
         async function fetchPlayers() {
             try {
-                const result = await window.storage.get('sb-players', true);
-                if (result && result.value) {
-                    players = JSON.parse(result.value);
-                }
+                const querySnapshot = await getDocs(collection(db, 'players'));
+                players = [];
+                querySnapshot.forEach((doc) => {
+                    players.push({ id: doc.id, ...doc.data() });
+                });
             } catch (error) {
                 console.log('No players found');
             }
@@ -680,32 +718,17 @@
 
         async function fetchResults() {
             try {
-                const result = await window.storage.get('sb-results', true);
-                if (result && result.value) {
-                    results = JSON.parse(result.value);
-                }
+                const querySnapshot = await getDocs(collection(db, 'results'));
+                results = {};
+                querySnapshot.forEach((doc) => {
+                    results[doc.id] = doc.data().result;
+                });
             } catch (error) {
                 console.log('No results found');
             }
         }
 
-        async function savePlayers() {
-            try {
-                await window.storage.set('sb-players', JSON.stringify(players), true);
-            } catch (error) {
-                console.error('Error saving players:', error);
-            }
-        }
-
-        async function saveResults() {
-            try {
-                await window.storage.set('sb-results', JSON.stringify(results), true);
-            } catch (error) {
-                console.error('Error saving results:', error);
-            }
-        }
-
-        function showTab(tabName) {
+        window.showTab = function(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -750,7 +773,6 @@
         }
 
         function oddsToDecimal(odds) {
-            // Remove + if present
             const cleanOdds = odds.replace('+', '');
             const numOdds = parseFloat(cleanOdds);
             
@@ -761,7 +783,7 @@
             }
         }
 
-        function updateSummary() {
+        window.updateSummary = function() {
             let totalWagered = 0;
             let potentialPayout = 0;
 
@@ -785,7 +807,6 @@
             document.getElementById('potentialPayout').textContent = `$${potentialPayout.toFixed(2)}`;
             document.getElementById('potentialProfit').textContent = `$${profit.toFixed(2)}`;
 
-            // Update bet item styling
             bets.forEach(bet => {
                 const wagerInput = document.getElementById(`wager-${bet.id}`);
                 if (!wagerInput) return;
@@ -799,7 +820,7 @@
             });
         }
 
-        async function submitBets() {
+        window.submitBets = async function() {
             const playerName = document.getElementById('playerName').value.trim();
             
             if (!playerName) {
@@ -838,17 +859,22 @@
             }
 
             try {
-                // Remove existing player if resubmitting
-                players = players.filter(p => p.name !== playerName);
+                // Check if player already exists
+                const existingPlayers = players.filter(p => p.name === playerName);
                 
-                players.push({
+                // Delete existing if found
+                for (const player of existingPlayers) {
+                    await deleteDoc(doc(db, 'players', player.id));
+                }
+
+                // Add new player
+                await addDoc(collection(db, 'players'), {
                     name: playerName,
                     bets: playerBets,
                     totalWagered: totalWagered,
                     timestamp: new Date().toISOString()
                 });
 
-                await savePlayers();
                 showMessage('betMessage', 'Bets submitted successfully! 🎉', 'success');
                 
                 // Reset form
@@ -876,7 +902,6 @@
         }
 
         function updateLeaderboard() {
-            // Calculate winnings for each player
             const standings = players.map(player => {
                 let winnings = 0;
                 
@@ -898,17 +923,14 @@
                 };
             });
 
-            // Sort by winnings
             standings.sort((a, b) => b.winnings - a.winnings);
 
-            // Update stats
             document.getElementById('totalPlayers').textContent = players.length;
             document.getElementById('totalBets').textContent = 
                 players.reduce((sum, p) => sum + p.bets.length, 0);
             document.getElementById('totalMoney').textContent = 
                 `$${players.reduce((sum, p) => sum + p.totalWagered, 0).toFixed(2)}`;
 
-            // Render player list
             const container = document.getElementById('playersList');
             container.innerHTML = '';
 
@@ -973,13 +995,18 @@
             });
         }
 
-        async function setResult(betId, result) {
-            results[betId] = result;
-            await saveResults();
-            await loadAllData();
+        window.setResult = async function(betId, result) {
+            try {
+                await setDoc(doc(db, 'results', String(betId)), {
+                    result: result
+                });
+            } catch (error) {
+                alert('Error setting result');
+                console.error('Error:', error);
+            }
         }
 
-        async function resetAllData() {
+        window.resetAllData = async function() {
             if (!confirm('This will delete ALL data including players and results. Are you absolutely sure?')) {
                 return;
             }
@@ -989,31 +1016,24 @@
             }
 
             try {
-                await window.storage.delete('sb-players', true);
-                await window.storage.delete('sb-results', true);
+                // Delete all players
+                const playersSnapshot = await getDocs(collection(db, 'players'));
+                for (const document of playersSnapshot.docs) {
+                    await deleteDoc(doc(db, 'players', document.id));
+                }
 
-                players = [];
-                results = {};
+                // Delete all results
+                const resultsSnapshot = await getDocs(collection(db, 'results'));
+                for (const document of resultsSnapshot.docs) {
+                    await deleteDoc(doc(db, 'results', document.id));
+                }
 
-                await loadAllData();
                 alert('All data has been reset.');
             } catch (error) {
                 alert('Error resetting data');
                 console.error('Error:', error);
             }
         }
-
-        // Auto-refresh leaderboard every 10 seconds if on that tab
-        setInterval(() => {
-            const leaderboardTab = document.getElementById('leaderboard');
-            if (leaderboardTab && leaderboardTab.classList.contains('active')) {
-                fetchPlayers().then(() => {
-                    fetchResults().then(() => {
-                        updateLeaderboard();
-                    });
-                });
-            }
-        }, 10000);
     </script>
 </body>
 </html>
