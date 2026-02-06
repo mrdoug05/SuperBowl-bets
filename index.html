@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Bowl LX Betting Pool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --deep-blue: #0A1929;
+            --card-bg: #1a2332;
+            --accent-red: #FF4444;
+            --text-light: #E8EAF0;
+            --text-muted: #8B95A8;
+            --success: #00C853;
+            --border: rgba(255, 215, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0A1929 0%, #1a2332 50%, #0d1b2a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 68, 68, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 72px;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--gold) 0%, #FFF 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover {
+            color: var(--gold);
+        }
+
+        .nav-tab.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.1);
+        }
+
+        .card-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--deep-blue);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .btn {
+            font-family: 'Oswald', sans-serif;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%);
+            color: var(--deep-blue);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #cc0000 100%);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #00a040 100%);
+            color: white;
+        }
+
+        .bet-selection {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .bet-item {
+            background: var(--deep-blue);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .bet-item:hover {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .bet-item.selected {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .bet-description {
+            font-size: 15px;
+            color: var(--text-light);
+        }
+
+        .bet-odds {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .bet-wager {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bet-wager input {
+            width: 100px;
+            padding: 8px 12px;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .summary-row.total {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: var(--gold);
+            border-top: 2px solid var(--gold);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .player-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .player-card {
+            background: var(--deep-blue);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: var(--gold);
+        }
+
+        .player-winnings {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .player-winnings.positive {
+            color: var(--success);
+        }
+
+        .player-winnings.negative {
+            color: var(--accent-red);
+        }
+
+        .admin-controls {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: var(--deep-blue);
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid var(--border);
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-buttons button {
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: rgba(0, 200, 83, 0.2);
+            border: 2px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--deep-blue);
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 36px;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 48px;
+            }
+
+            .bet-item {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tab {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SUPER BOWL LX</h1>
+            <div class="subtitle">Youth Group Betting Pool</div>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('place-bets')">Place Bets</button>
+            <button class="nav-tab" onclick="showTab('leaderboard')">Leaderboard</button>
+            <button class="nav-tab" id="adminTab" style="display: none;" onclick="showTab('admin')">Admin Panel</button>
+        </div>
+
+        <!-- PLACE BETS TAB -->
+        <div id="place-bets" class="tab-content active">
+            <div class="card">
+                <div class="card-header">Your Information</div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="playerName" placeholder="Enter your name">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Select Your Bets (Max $100 Total)</div>
+                <div id="betsList" class="bet-selection"></div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-row">
+                    <span>Total Wagered:</span>
+                    <span id="totalWagered">$0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Potential Payout:</span>
+                    <span id="potentialPayout">$0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Potential Profit:</span>
+                    <span id="potentialProfit">$0</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="submitBets()" style="width: 100%;">
+                Submit Bets
+            </button>
+
+            <div id="betMessage"></div>
+        </div>
+
+        <!-- LEADERBOARD TAB -->
+        <div id="leaderboard" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPlayers">0</div>
+                    <div class="stat-label">Total Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBets">0</div>
+                    <div class="stat-label">Total Bets Placed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalMoney">$0</div>
+                    <div class="stat-label">Money in Play</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Current Standings</div>
+                <div id="playersList" class="player-list">
+                    <div class="loading">No players yet. Be the first to place a bet!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL TAB (HIDDEN) -->
+        <div id="admin" class="tab-content">
+            <div class="card">
+                <div class="card-header">Enter Results</div>
+                <div id="resultsPanel" class="admin-controls"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Danger Zone</div>
+                <button class="btn btn-danger" onclick="resetAllData()">Reset All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // All bets hardcoded
+        const bets = [
+            { id: 1, description: "Seahawks to win", odds: "-240" },
+            { id: 2, description: "Patriots to win", odds: "185" },
+            { id: 3, description: "Seahawks cover -4.5", odds: "-115" },
+            { id: 4, description: "Patriots cover +4.5", odds: "-105" },
+            { id: 5, description: "Game total OVER 45.5", odds: "-110" },
+            { id: 6, description: "Game total UNDER 45.5", odds: "-110" },
+            { id: 7, description: "Seahawks first to score", odds: "-115" },
+            { id: 8, description: "Patriots first to score", odds: "100" },
+            { id: 9, description: "Seahawks win by 1-6 points", odds: "950" },
+            { id: 10, description: "Game goes to overtime", odds: "2200" },
+            { id: 11, description: "First quarter OVER 10.5 points", odds: "-110" },
+            { id: 12, description: "First quarter UNDER 10.5 points", odds: "-110" },
+            { id: 13, description: "Win by exactly 3 or 7 or 14th", odds: "180" },
+            { id: 14, description: "Team scores last points - Seahawks", odds: "-130" },
+            { id: 15, description: "Team scores last points - Patriots", odds: "110" },
+            { id: 16, description: "Both teams score 20 points", odds: "145" },
+            { id: 17, description: "Both teams score 24+ points", odds: "650" },
+            { id: 18, description: "Largest lead OVER 13.5 points", odds: "-120" },
+            { id: 19, description: "Largest lead UNDER 13.5 points", odds: "100" },
+            { id: 20, description: "Game ends with total OVER 47.5", odds: "-135" },
+            { id: 21, description: "Sam Darnold OVER passing yards - 274.5", odds: "-110" },
+            { id: 22, description: "Sam Darnold UNDER passing yards - 274.5", odds: "-110" },
+            { id: 23, description: "Drake Maye OVER passing yards - 239.5", odds: "-110" },
+            { id: 24, description: "Drake Maye UNDER passing yards - 239.5", odds: "-110" },
+            { id: 25, description: "Kenneth Walker III OVER rushing yards - 79.5", odds: "-115" },
+            { id: 26, description: "Kenneth Walker III UNDER rushing yards - 79.5", odds: "-105" },
+            { id: 27, description: "Rhamondre Stevenson UNDER rushing yards - 64.5", odds: "110" },
+            { id: 28, description: "Rhamondre Stevenson OVER rushing yards - 64.5", odds: "-110" },
+            { id: 29, description: "Any player scores 2+ TDs", odds: "260" },
+            { id: 30, description: "Longest TD UNDER 39.5 yards", odds: "-1200" },
+            { id: 31, description: "QB throws for 300+ yards", odds: "240" },
+            { id: 32, description: "QB throws 5+ passes", odds: "180" },
+            { id: 33, description: "QB throws 0 TDs", odds: "-180" },
+            { id: 34, description: "QB throws 2+ interceptions", odds: "320" },
+            { id: 35, description: "Longest TD OVER 45.5 yards", odds: "-110" },
+            { id: 36, description: "Longest TD UNDER 45.5 yards", odds: "-110" },
+            { id: 37, description: "Any WR has 100+ receiving yards", odds: "230" },
+            { id: 38, description: "Any RB has 100+ rushing yards", odds: "450" },
+            { id: 39, description: "Any QB catches for a TD", odds: "700" },
+            { id: 40, description: "Defensive TD scored", odds: "700" },
+            { id: 41, description: "MVP is a QB", odds: "-200" },
+            { id: 42, description: "MVP is non-quarterback", odds: "170" },
+            { id: 43, description: "MVP is offensive player", odds: "-1200" },
+            { id: 44, description: "MVP is running back", odds: "650" },
+            { id: 45, description: "MVP is WR", odds: "550" },
+            { id: 46, description: "Any player records 2+ sacks", odds: "300" },
+            { id: 47, description: "Coin toss - Heads", odds: "-110" },
+            { id: 48, description: "Coin toss - Tails", odds: "-110" },
+            { id: 49, description: "National Anthem OVER 2:00", odds: "-110" },
+            { id: 50, description: "National Anthem UNDER 2:00", odds: "-110" },
+            { id: 51, description: "Anthem singer cries", odds: "450" },
+            { id: 52, description: "Post-game Gatorade color - Orange", odds: "180" },
+            { id: 53, description: "Post-game Gatorade color - Yellow/Lime", odds: "230" },
+            { id: 54, description: "Post-game Gatorade color - Blue", odds: "260" },
+            { id: 55, description: "Post-game Gatorade color - Clear/None", odds: "600" },
+            { id: 56, description: "First turnover is a fumble", odds: "200" },
+            { id: 57, description: "First turnover is a fumble", odds: "240" },
+            { id: 58, description: "First turnover is an INT", odds: "1800" },
+            { id: 59, description: "Any pick-six in game", odds: "900" },
+            { id: 60, description: "Any special teams TD", odds: "1200" },
+            { id: 61, description: "Any two-point conversion made", odds: "180" },
+            { id: 62, description: "Missed extra point", odds: "350" },
+            { id: 63, description: "Made field goal", odds: "260" },
+            { id: 64, description: "Player ejected", odds: "900" },
+            { id: 65, description: "Any coach challenge", odds: "-110" },
+            { id: 66, description: "Unsuccessful coach challenge", odds: "110" },
+            { id: 67, description: "Any penalty by walk-off score", odds: "500" },
+            { id: 68, description: "Final score ends in 0", odds: "-120" },
+            { id: 69, description: "Final score ends in 7", odds: "-120" },
+            { id: 70, description: "Final score ends in 3", odds: "-110" },
+            { id: 71, description: "Final score ends in 4", odds: "850" },
+            { id: 72, description: "Final score ends in 8", odds: "1200" },
+            { id: 73, description: "Final score ends in 1", odds: "-1500" },
+            { id: 74, description: "First commercial airs - Doritos", odds: "-145" },
+            { id: 75, description: "First commercial airs - Pringles", odds: "-105" },
+            { id: 76, description: "First commercial airs - Budweiser", odds: "175" },
+            { id: 77, description: "First commercial airs - Pepsi", odds: "-120" },
+            { id: 78, description: "First commercial airs - Coca-Cola", odds: "-170" },
+            { id: 79, description: "First commercial airs - Turbo tax", odds: "140" },
+            { id: 80, description: "First commercial airs - WeatherTech", odds: "300" },
+            { id: 81, description: "Total commercials OVER 86", odds: "-120" },
+            { id: 82, description: "Total commercials UNDER 86", odds: "-120" },
+            { id: 83, description: "Celebrity appears in first commercial", odds: "-180" },
+            { id: 84, description: "Animated character appears in commercial", odds: "220" },
+            { id: 85, description: "Dog appears in a commercial", odds: "-150" },
+            { id: 86, description: "Baby appears in a commercial", odds: "-120" },
+            { id: 87, description: "Movie trailer airs in first half", odds: "-140" },
+            { id: 88, description: "Alcohol commercial airs first", odds: "160" },
+            { id: 89, description: "Fast food commercial airs first", odds: "180" },
+            { id: 90, description: "Halftime show OVER 13.5 minutes", odds: "-120" },
+            { id: 91, description: "Halftime show UNDER 13.5 minutes", odds: "100" },
+            { id: 92, description: "Bad Bunny changes outfit during show", odds: "350" },
+            { id: 93, description: "Halftime show includes pyro", odds: "180" },
+            { id: 94, description: "Pyrotechnics used during halftime", odds: "-260" },
+            { id: 95, description: "Special guest appears", odds: "-140" },
+            { id: 96, description: "Halftime show includes crowd sing-along", odds: "220" }
+        ];
+
+        let players = [];
+        let results = {};
+        let isAdmin = false;
+
+        // Check if admin mode is enabled
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'true') {
+            isAdmin = true;
+            document.getElementById('adminTab').style.display = 'block';
+        }
+
+        // Initialize
+        loadAllData();
+
+        async function loadAllData() {
+            try {
+                await Promise.all([
+                    fetchPlayers(),
+                    fetchResults()
+                ]);
+                renderBets();
+                updateLeaderboard();
+                if (isAdmin) {
+                    updateAdminPanel();
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                renderBets();
+            }
+        }
+
+        async function fetchPlayers() {
+            try {
+                const result = await window.storage.get('sb-players', true);
+                if (result && result.value) {
+                    players = JSON.parse(result.value);
+                }
+            } catch (error) {
+                console.log('No players found');
+            }
+        }
+
+        async function fetchResults() {
+            try {
+                const result = await window.storage.get('sb-results', true);
+                if (result && result.value) {
+                    results = JSON.parse(result.value);
+                }
+            } catch (error) {
+                console.log('No results found');
+            }
+        }
+
+        async function savePlayers() {
+            try {
+                await window.storage.set('sb-players', JSON.stringify(players), true);
+            } catch (error) {
+                console.error('Error saving players:', error);
+            }
+        }
+
+        async function saveResults() {
+            try {
+                await window.storage.set('sb-results', JSON.stringify(results), true);
+            } catch (error) {
+                console.error('Error saving results:', error);
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'leaderboard') {
+                loadAllData();
+            } else if (tabName === 'admin') {
+                loadAllData();
+            }
+        }
+
+        function renderBets() {
+            const container = document.getElementById('betsList');
+            container.innerHTML = '';
+
+            bets.forEach(bet => {
+                const div = document.createElement('div');
+                div.className = 'bet-item';
+                div.innerHTML = `
+                    <div class="bet-description">${bet.description}</div>
+                    <div class="bet-odds">${bet.odds.startsWith('-') || bet.odds.startsWith('+') ? bet.odds : '+' + bet.odds}</div>
+                    <div class="bet-wager">
+                        <span>$</span>
+                        <input type="number" 
+                               id="wager-${bet.id}" 
+                               min="0" 
+                               max="100" 
+                               value="0" 
+                               onchange="updateSummary()">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            updateSummary();
+        }
+
+        function oddsToDecimal(odds) {
+            // Remove + if present
+            const cleanOdds = odds.replace('+', '');
+            const numOdds = parseFloat(cleanOdds);
+            
+            if (numOdds > 0) {
+                return (numOdds / 100) + 1;
+            } else {
+                return (100 / Math.abs(numOdds)) + 1;
+            }
+        }
+
+        function updateSummary() {
+            let totalWagered = 0;
+            let potentialPayout = 0;
+
+            bets.forEach(bet => {
+                const wagerInput = document.getElementById(`wager-${bet.id}`);
+                if (!wagerInput) return;
+                
+                const wager = parseFloat(wagerInput.value) || 0;
+                
+                totalWagered += wager;
+                
+                if (wager > 0) {
+                    const decimal = oddsToDecimal(bet.odds);
+                    potentialPayout += wager * decimal;
+                }
+            });
+
+            const profit = potentialPayout - totalWagered;
+
+            document.getElementById('totalWagered').textContent = `$${totalWagered.toFixed(2)}`;
+            document.getElementById('potentialPayout').textContent = `$${potentialPayout.toFixed(2)}`;
+            document.getElementById('potentialProfit').textContent = `$${profit.toFixed(2)}`;
+
+            // Update bet item styling
+            bets.forEach(bet => {
+                const wagerInput = document.getElementById(`wager-${bet.id}`);
+                if (!wagerInput) return;
+                
+                const betItem = wagerInput.closest('.bet-item');
+                if (parseFloat(wagerInput.value) > 0) {
+                    betItem.classList.add('selected');
+                } else {
+                    betItem.classList.remove('selected');
+                }
+            });
+        }
+
+        async function submitBets() {
+            const playerName = document.getElementById('playerName').value.trim();
+            
+            if (!playerName) {
+                showMessage('betMessage', 'Please enter your name!', 'error');
+                return;
+            }
+
+            let totalWagered = 0;
+            const playerBets = [];
+
+            bets.forEach(bet => {
+                const wagerInput = document.getElementById(`wager-${bet.id}`);
+                if (!wagerInput) return;
+                
+                const wager = parseFloat(wagerInput.value) || 0;
+                
+                if (wager > 0) {
+                    totalWagered += wager;
+                    playerBets.push({
+                        betId: bet.id,
+                        description: bet.description,
+                        odds: bet.odds,
+                        wager: wager
+                    });
+                }
+            });
+
+            if (totalWagered === 0) {
+                showMessage('betMessage', 'Please place at least one bet!', 'error');
+                return;
+            }
+
+            if (totalWagered > 100) {
+                showMessage('betMessage', 'Total wagers cannot exceed $100!', 'error');
+                return;
+            }
+
+            try {
+                // Remove existing player if resubmitting
+                players = players.filter(p => p.name !== playerName);
+                
+                players.push({
+                    name: playerName,
+                    bets: playerBets,
+                    totalWagered: totalWagered,
+                    timestamp: new Date().toISOString()
+                });
+
+                await savePlayers();
+                showMessage('betMessage', 'Bets submitted successfully! 🎉', 'success');
+                
+                // Reset form
+                setTimeout(() => {
+                    document.getElementById('playerName').value = '';
+                    bets.forEach(bet => {
+                        const input = document.getElementById(`wager-${bet.id}`);
+                        if (input) input.value = '0';
+                    });
+                    updateSummary();
+                }, 1500);
+            } catch (error) {
+                showMessage('betMessage', 'Error submitting bets. Please try again.', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        function showMessage(elementId, message, type) {
+            const msgDiv = document.getElementById(elementId);
+            msgDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                msgDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function updateLeaderboard() {
+            // Calculate winnings for each player
+            const standings = players.map(player => {
+                let winnings = 0;
+                
+                player.bets.forEach(bet => {
+                    const result = results[bet.betId];
+                    if (result === 'won') {
+                        const decimal = oddsToDecimal(bet.odds);
+                        winnings += bet.wager * decimal;
+                    } else if (result === 'lost') {
+                        winnings -= bet.wager;
+                    }
+                });
+
+                return {
+                    name: player.name,
+                    winnings: winnings,
+                    totalWagered: player.totalWagered,
+                    betsPlaced: player.bets.length
+                };
+            });
+
+            // Sort by winnings
+            standings.sort((a, b) => b.winnings - a.winnings);
+
+            // Update stats
+            document.getElementById('totalPlayers').textContent = players.length;
+            document.getElementById('totalBets').textContent = 
+                players.reduce((sum, p) => sum + p.bets.length, 0);
+            document.getElementById('totalMoney').textContent = 
+                `$${players.reduce((sum, p) => sum + p.totalWagered, 0).toFixed(2)}`;
+
+            // Render player list
+            const container = document.getElementById('playersList');
+            container.innerHTML = '';
+
+            if (standings.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No players yet. Be the first to place a bet!</p>';
+                return;
+            }
+
+            standings.forEach((player, index) => {
+                const div = document.createElement('div');
+                div.className = 'player-card';
+                
+                const winningsClass = player.winnings > 0 ? 'positive' : 
+                                     player.winnings < 0 ? 'negative' : '';
+                const prefix = player.winnings > 0 ? '+' : '';
+                
+                div.innerHTML = `
+                    <div>
+                        <div class="player-name">#${index + 1} ${player.name}</div>
+                        <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">
+                            ${player.betsPlaced} bets • $${player.totalWagered.toFixed(2)} wagered
+                        </div>
+                    </div>
+                    <div class="player-winnings ${winningsClass}">
+                        ${prefix}$${player.winnings.toFixed(2)}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateAdminPanel() {
+            if (!isAdmin) return;
+
+            const resultsContainer = document.getElementById('resultsPanel');
+            resultsContainer.innerHTML = '';
+
+            bets.forEach(bet => {
+                const currentResult = results[bet.id] || 'pending';
+                
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600;">${bet.description}</div>
+                        <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">
+                            Status: <span style="color: var(--gold);">${currentResult.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="result-buttons">
+                        <button class="btn btn-success" onclick="setResult(${bet.id}, 'won')" 
+                                ${currentResult === 'won' ? 'disabled' : ''}>
+                            Won
+                        </button>
+                        <button class="btn btn-danger" onclick="setResult(${bet.id}, 'lost')"
+                                ${currentResult === 'lost' ? 'disabled' : ''}>
+                            Lost
+                        </button>
+                    </div>
+                `;
+                resultsContainer.appendChild(div);
+            });
+        }
+
+        async function setResult(betId, result) {
+            results[betId] = result;
+            await saveResults();
+            await loadAllData();
+        }
+
+        async function resetAllData() {
+            if (!confirm('This will delete ALL data including players and results. Are you absolutely sure?')) {
+                return;
+            }
+
+            if (!confirm('Last chance! This cannot be undone. Continue?')) {
+                return;
+            }
+
+            try {
+                await window.storage.delete('sb-players', true);
+                await window.storage.delete('sb-results', true);
+
+                players = [];
+                results = {};
+
+                await loadAllData();
+                alert('All data has been reset.');
+            } catch (error) {
+                alert('Error resetting data');
+                console.error('Error:', error);
+            }
+        }
+
+        // Auto-refresh leaderboard every 10 seconds if on that tab
+        setInterval(() => {
+            const leaderboardTab = document.getElementById('leaderboard');
+            if (leaderboardTab && leaderboardTab.classList.contains('active')) {
+                fetchPlayers().then(() => {
+                    fetchResults().then(() => {
+                        updateLeaderboard();
+                    });
+                });
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
